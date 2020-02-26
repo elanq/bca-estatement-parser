@@ -1,0 +1,22 @@
+#! /usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'pdf-reader'
+require 'pry'
+require_relative 'lib/monkeypatch.rb'
+require_relative 'lib/statement.rb'
+
+filename = '/Users/eq/Downloads/7773020908Apr2018.pdf'
+reader = PDF::Reader.new(filename)
+records = []
+reader.pages.each_with_index do |page, idx|
+  parsed_page = Page.new(page)
+  parsed_page.parse_page!
+  records << parsed_page.records
+  if idx == (reader.pages.length - 1)
+    summary = parsed_page.parse_summary
+    puts summary.serialize
+  end
+end
+
+puts records.flatten!.map(&:serialize)
